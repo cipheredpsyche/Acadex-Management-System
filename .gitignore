@@ -1,9 +1,9 @@
-# Python and Django ignores
 __pycache__/
 *.pyc
-*.pyo
 db.sqlite3
-.venv/
-venv/
-env/
+media/
+staticfiles/
 .env
+venv/
+.venv/
+.DS_Store

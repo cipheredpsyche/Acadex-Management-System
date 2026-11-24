@@ -1,0 +1,105 @@
+{% extends 'core/base_app.html' %}
+{% block title %}Profile{% endblock %}
+{% block page_head %}<section class="page-head tall"><h1>My Profile</h1></section>{% endblock %}
+{% block content %}
+<section class="profile-card">
+  <div class="photo-col">
+    {% if user.photo %}<img class="photo" src="{{ user.photo.url }}" alt="Profile photo">
+    {% else %}<div class="photo avatar-xl">{{ user.initials }}</div>{% endif %}
+    <form method="post" action="{% url 'profile_photo' %}" enctype="multipart/form-data">
+      {% csrf_token %}
+      <label class="change-photo"><svg class="icon"><use href="#i-camera"/></svg> Change Photo
+        <input type="file" name="photo" accept="image/*" data-autosubmit hidden></label>
+    </form>
+  </div>
+  <div class="profile-info">
+    <h2>{{ user.full_name }}</h2>
+    <div class="info-grid">
+      <div>
+        {% if user.is_admin_role %}
+          <p><svg class="icon maroon"><use href="#i-cap"/></svg> Administrator</p>
+          <p><svg class="icon maroon"><use href="#i-id"/></svg> ID: {{ user.school_id|default:"—" }}</p>
+          <span class="badge">ACTIVE</span>
+        {% else %}
+          <p><svg class="icon maroon"><use href="#i-cap"/></svg> {{ user.course|default:"No course yet" }}</p>
+          <p><svg class="icon maroon"><use href="#i-id"/></svg> Student ID: {{ user.school_id|default:"—" }}</p>
+          <span class="badge">ENROLLED</span>
+        {% endif %}
+      </div>
+      <div>
+        <p><svg class="icon maroon"><use href="#i-mail"/></svg> {{ user.email }}</p>
+        <p><svg class="icon maroon"><use href="#i-pin"/></svg> {{ user.address|default:"—" }}</p>
+        <p><svg class="icon maroon"><use href="#i-phone"/></svg> {{ user.contact_number|default:"—" }}</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="info-cols">
+  <div>
+    <h3 class="info-title">Personal Information</h3>
+    <div class="info-panel">
+      <dl>
+        <dt>Full name</dt><dd>{{ user.full_name }}</dd>
+        {% if not user.is_admin_role %}
+          <dt>Age</dt><dd>{{ user.age|default_if_none:"—" }}</dd>
+          <dt>Gender</dt><dd>{{ user.gender|default:"—" }}</dd>
+          <dt>Date of Birth</dt><dd>{% if user.birthdate %}{{ user.birthdate|date:"F j, Y" }}{% else %}—{% endif %}</dd>
+        {% endif %}
+        <dt>Address</dt><dd>{{ user.address|default:"—" }}</dd>
+      </dl>
+    </div>
+  </div>
+  {% if not user.is_admin_role %}
+  <div>
+    <h3 class="info-title">Academic Information</h3>
+    <div class="info-panel">
+      <dl>
+        <dt>Course / Program</dt><dd>{{ user.course|default:"—" }}</dd>
+        <dt>Academic Year</dt><dd>{{ user.academic_year|default:"—" }}</dd>
+        <dt>Year Level</dt><dd>{{ user.year_level|default:"—" }}</dd>
+        <dt>Section</dt><dd>{{ user.section|default:"—" }}</dd>
+        <dt>Tasks completed</dt><dd>{{ stats.done }} of {{ stats.total }}</dd>
+      </dl>
+    </div>
+  </div>
+  {% endif %}
+</div>
+
+<div class="bottom-bar">
+  <button type="button" class="btn btn-cream" data-open-dialog="pwDialog">Change Password</button>
+  <button type="button" class="btn btn-maroon" data-open-dialog="profileDialog"><svg class="icon sm"><use href="#i-edit"/></svg> Edit Profile</button>
+</div>
+{% endblock %}
+
+{% block modals %}
+<dialog id="profileDialog" class="modal wide-modal">
+  <form method="post" action="{% url 'profile_edit' %}" class="modal-form">
+    {% csrf_token %}
+    <h2 class="modal-title plain">Edit Profile</h2>
+    <div class="form-grid">
+      {% for f in form %}
+        <div class="field"><label for="{{ f.id_for_label }}">{{ f.label }}</label>{{ f }}</div>
+      {% endfor %}
+    </div>
+    <div class="modal-actions">
+      <button type="button" class="btn btn-cream" data-close>Cancel</button>
+      <button type="submit" class="btn btn-maroon">Save Changes</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="pwDialog" class="modal">
+  <form method="post" action="{% url 'change_password' %}" class="modal-form">
+    {% csrf_token %}
+    <h2 class="modal-title plain">Change Password</h2>
+    {% for f in pw_form %}
+      <div class="field"><label for="{{ f.id_for_label }}">{{ f.label }}</label>{{ f }}</div>
+    {% endfor %}
+    <div class="modal-actions">
+      <button type="button" class="btn btn-cream" data-close>Cancel</button>
+      <button type="submit" class="btn btn-maroon">Save</button>
+    </div>
+  </form>
+</dialog>
+{% endblock %}

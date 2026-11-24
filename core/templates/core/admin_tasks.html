@@ -1,0 +1,46 @@
+{% extends 'core/base_app.html' %}
+{% block title %}Manage Tasks{% endblock %}
+{% block page_head %}
+<section class="page-head tall"><h1>Manage Tasks</h1>
+  <div class="stats stats-4 in-head">
+    <div class="stat"><strong>{{ students }}</strong><span>Students</span></div>
+    <div class="stat"><strong>{{ active }}</strong><span>Active Tasks</span></div>
+    <div class="stat"><strong>{{ completed }}</strong><span>Completed</span></div>
+    <div class="stat"><strong>{{ pending }}</strong><span>Pending</span></div>
+  </div>
+</section>
+{% endblock %}
+{% block content %}
+<div class="manage-grid pad-top">
+  <section>
+    <h2 class="section-title">Recent Activities{% if current %} <small class="muted">· {{ current }} <a href="{% url 'admin_tasks' %}">(clear)</a></small>{% endif %}</h2>
+    <div class="table-head maroon-soft"><span>Task Title</span><span>Student</span><span>Subject</span><span>Due Date</span><span>Status</span><span></span></div>
+    {% for t in tasks %}
+      <div class="trow six">
+        <span class="bold">{{ t.title }}</span>
+        <span class="c">{{ t.student.full_name }}</span>
+        <span class="c">{{ t.subject.name }}</span>
+        <span class="c">{{ t.due_date|date:"M j, Y" }}</span>
+        <form method="post" action="{% url 'task_status' t.pk %}" class="status-form">
+          {% csrf_token %}
+          <select name="status" class="pill pill-{{ t.status_class }}" onchange="this.form.submit()" aria-label="Status">
+            {% for value, label in status_choices %}<option value="{{ value }}" {% if value == t.status %}selected{% endif %}>{{ label }}</option>{% endfor %}
+          </select>
+        </form>
+        <button type="button" class="icon-btn danger" title="Delete"
+                data-confirm data-confirm-title="Delete this task?"
+                data-confirm-text="“{{ t.title }}” will be moved to the trash bin."
+                data-confirm-action="{% url 'task_delete' t.pk %}" data-confirm-yes="Delete">
+          <svg class="icon"><use href="#i-trash"/></svg></button>
+      </div>
+    {% empty %}<div class="empty">No tasks found.</div>{% endfor %}
+  </section>
+  <aside>
+    <h2 class="section-title">Category</h2>
+    {% for c in categories %}
+      <a class="cat-btn {% if current == c.name %}on{% endif %}" href="{% url 'admin_tasks' %}?subject={{ c.name|urlencode }}">{{ c.name }}</a>
+    {% empty %}<p class="muted">No categories yet.</p>{% endfor %}
+    <a class="view-all" href="{% url 'categories' %}">Manage categories</a>
+  </aside>
+</div>
+{% endblock %}

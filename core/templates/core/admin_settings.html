@@ -1,0 +1,32 @@
+{% extends 'core/base_app.html' %}
+{% block title %}Settings{% endblock %}
+{% block page_head %}<section class="page-head"><h1>Settings</h1></section>{% endblock %}
+{% block content %}
+<form method="post" class="settings-card">
+  {% csrf_token %}
+  <h2 class="panel-title">School Information</h2>
+  <div class="settings-grid">
+    <div class="field"><label for="{{ form.institution_name.id_for_label }}"><svg class="icon maroon"><use href="#i-cap"/></svg> Institution Name</label>{{ form.institution_name }}</div>
+    <div class="field"><label for="{{ form.academic_year.id_for_label }}"><svg class="icon maroon"><use href="#i-calendar"/></svg> Academic Year</label>{{ form.academic_year }}</div>
+    <div class="field"><label for="{{ form.current_semester.id_for_label }}"><svg class="icon maroon"><use href="#i-subjects"/></svg> Current Semester</label>{{ form.current_semester }}</div>
+    <div class="field"><label for="{{ form.default_priority.id_for_label }}">Default Priority</label>{{ form.default_priority }}</div>
+    <div class="field"><label for="{{ form.default_status.id_for_label }}">Default Status</label>{{ form.default_status }}</div>
+    <div>
+      <h3 class="panel-title small">Task Settings</h3>
+      <a class="btn btn-maroon" href="{% url 'categories' %}">Manage Categories</a>
+    </div>
+  </div>
+
+  <div class="data-card">
+    <h3>Data Management</h3>
+    <p><strong>Trashbin</strong></p>
+    <p class="muted">View and restore deleted tasks ({{ trash_count }} in the trash).</p>
+    <a class="btn btn-maroon btn-sm" href="{% url 'trash' %}">View Trashbin</a>
+  </div>
+
+  <div class="modal-actions end">
+    <a class="btn btn-cream" href="{% url 'dashboard' %}">Cancel</a>
+    <button type="submit" class="btn btn-maroon">Save Changes</button>
+  </div>
+</form>
+{% endblock %}

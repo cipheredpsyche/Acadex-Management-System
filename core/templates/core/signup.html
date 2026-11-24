@@ -1,0 +1,29 @@
+{% extends 'core/auth_base.html' %}
+{% load static %}
+{% block title %}Create Account{% endblock %}
+{% block body %}
+<div class="signup-wrap">
+  <div class="signup-left">
+    <h1>Create Account</h1>
+    <p class="signup-sub">Create a new account to get started and enjoy seamless access to our features.</p>
+    <form method="post" novalidate>
+      {% csrf_token %}
+      {% if form.non_field_errors %}<div class="alert alert-error">{{ form.non_field_errors.0 }}</div>{% endif %}
+      {% for f in form %}
+        <div class="pill-field">{{ f }}</div>
+        {% for e in f.errors %}<small class="err-light">{{ e }}</small>{% endfor %}
+      {% endfor %}
+      <button class="btn btn-white btn-pill" type="submit">Sign Up</button>
+    </form>
+    <p class="signup-have">Already have an account? <a href="{% url 'select_account' %}">Sign in here</a></p>
+    <div class="divider light"><span>Or</span></div>
+    <p class="social-title light">Continue with Account</p>
+    {% include 'core/partials/social.html' %}
+  </div>
+  <div class="signup-right">
+    <div class="glass g1"><svg class="icon xl"><use href="#i-tasks"/></svg><div><h3>Task Management</h3><p>Easily add, organize, and monitor your academic tasks with clear deadlines and task statuses.</p></div></div>
+    <div class="glass g2"><svg class="icon xl"><use href="#i-bell"/></svg><div><h3>Study Focus and Deadline Tracking</h3><p>Stay on top of important assignments by setting deadlines, priorities, and reminders for every task.</p></div></div>
+    <div class="glass g3"><svg class="icon xl"><use href="#i-progress"/></svg><div><h3>Progress Monitoring</h3><p>Track your completed and pending tasks to see your academic progress and stay motivated.</p></div></div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,29 @@
+{% extends 'core/base_app.html' %}
+{% block title %}Progress{% endblock %}
+{% block page_head %}
+<section class="page-head tall"><h1>Progress</h1>
+  <div class="stats stats-2 in-head">
+    <div class="stat big"><strong>{{ completed_subjects }}</strong><span>Total Completed Subjects</span></div>
+    <div class="stat big"><strong>{{ scheduled_subjects }}</strong><span>Total Scheduled Subjects</span></div>
+  </div>
+</section>
+{% endblock %}
+{% block content %}
+<div class="two-col pad-top">
+  <section class="panel">
+    <div class="panel-head"><svg class="icon xl maroon"><use href="#i-target"/></svg><h2>My Progress</h2><span class="sem-pill">{{ semester }}</span></div>
+    {% for b in bars %}
+      <div class="pbar"><label>{{ b.name }}</label><div class="track"><span style="width: {{ b.pct }}%"></span></div></div>
+    {% empty %}<p class="muted">Add tasks to see your progress here.</p>{% endfor %}
+  </section>
+  <section class="panel">
+    <div class="panel-head"><svg class="icon xl maroon"><use href="#i-calendar"/></svg><h2>Next Deadlines</h2></div>
+    {% for t in deadlines %}
+      <div class="deadline">
+        <div class="datebox"><span>{{ t.due_date|date:"M"|upper }}</span><b>{{ t.due_date|date:"j" }}</b><span>{{ t.due_date|date:"Y" }}</span></div>
+        <div><strong>{{ t.subject.name }}</strong><p>{{ t.title }}</p></div>
+      </div>
+    {% empty %}<p class="muted">No upcoming deadlines.</p>{% endfor %}
+  </section>
+</div>
+{% endblock %}

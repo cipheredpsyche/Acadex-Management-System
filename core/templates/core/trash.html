@@ -1,0 +1,27 @@
+{% extends 'core/base_app.html' %}
+{% block title %}Trash Bin{% endblock %}
+{% block page_head %}<section class="page-head"><h1>Trash Bin</h1></section>{% endblock %}
+{% block content %}
+<p class="lead small">Deleted tasks stay here until you restore or permanently delete them.</p>
+{% for t in tasks %}
+  <div class="row trash-row">
+    <div class="r-main"><strong>{{ t.title }}</strong>
+      <small>{{ t.subject.name }} &middot; due {{ t.due_date|date:"F j, Y" }}{% if user.is_admin_role %} &middot; {{ t.student.full_name }}{% endif %}
+        &middot; deleted {{ t.deleted_at|date:"M j, Y" }}</small></div>
+    <button type="button" class="btn btn-maroon btn-sm"
+            data-confirm data-confirm-title="Confirm Restoration"
+            data-confirm-text="Restore “{{ t.title }}”? It will appear in the task list again."
+            data-confirm-action="{% url 'task_restore' t.pk %}" data-confirm-yes="Restore">Restore</button>
+    <button type="button" class="icon-btn danger" title="Delete permanently"
+            data-confirm data-confirm-title="Delete permanently?"
+            data-confirm-text="“{{ t.title }}” will be gone for good. This cannot be undone."
+            data-confirm-action="{% url 'task_purge' t.pk %}" data-confirm-yes="Delete">
+      <svg class="icon"><use href="#i-trash"/></svg></button>
+  </div>
+{% empty %}
+  <div class="empty">The trash bin is empty.</div>
+{% endfor %}
+<div class="bottom-bar">
+  <a class="btn btn-cream" href="{% if user.is_admin_role %}{% url 'admin_settings' %}{% else %}{% url 'tasks' %}{% endif %}">&larr; Back</a>
+</div>
+{% endblock %}

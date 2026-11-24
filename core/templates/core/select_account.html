@@ -1,0 +1,21 @@
+{% extends 'core/base_public.html' %}
+{% block title %}Select account{% endblock %}
+{% block content %}
+<section class="select-account">
+  <h1>Select your account type to continue</h1>
+  <div class="account-cards">
+    <div class="account-card">
+      <svg class="icon xl"><use href="#i-cap"/></svg>
+      <h2>Student</h2>
+      <a class="btn btn-cream btn-lg" href="{% url 'login' %}?type=student">Continue &rarr;</a>
+    </div>
+    <div class="account-card">
+      <svg class="icon xl"><use href="#i-profile"/></svg>
+      <h2>Administrator</h2>
+      <a class="btn btn-cream btn-lg" href="{% url 'login' %}?type=admin">Continue &rarr;</a>
+    </div>
+  </div>
+  <div class="notice"><svg class="icon"><use href="#i-warn"/></svg>
+    <span>Your account type is assigned by Acadex. Selecting an account does not change your role. Thank you.</span></div>
+</section>
+{% endblock %}

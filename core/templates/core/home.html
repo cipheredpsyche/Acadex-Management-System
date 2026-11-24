@@ -1,0 +1,62 @@
+{% extends 'core/base_public.html' %}
+{% load static %}
+{% block title %}Home{% endblock %}
+{% block content %}
+<section class="hero">
+  <div class="hero-img"><img src="{% static 'core/img/books.png' %}" alt="Stack of books"></div>
+  <div class="hero-text">
+    <h1>Never miss a<br>school task.</h1>
+    <p>Acadex is your academic task companion that helps you organize assignments, track deadlines, and stay on top of your schoolwork.</p>
+    <div class="hero-actions">
+      <a href="{% url 'signup' %}" class="btn btn-primary btn-lg">Get Started</a>
+      <a href="#features" class="btn btn-outline btn-lg">Explore Acadex</a>
+    </div>
+  </div>
+  <p class="hero-note">Turn schoolwork into a clear game plan — track every subject, assignment, deadline, and status, all in one place.</p>
+</section>
+
+<section class="band" id="features">
+  <h2>Goodbye chaos. <strong>Hello Control.</strong></h2>
+  <hr class="rule">
+  <p class="band-sub">All your school tasks, simple and organized.</p>
+  <div class="features">
+    <div class="feature"><span class="f-icon"><svg class="icon"><use href="#i-tasks"/></svg></span><div><h3>Tasks</h3><p>Create and manage your assignments in one organized place.</p></div></div>
+    <div class="feature"><span class="f-icon"><svg class="icon"><use href="#i-calendar"/></svg></span><div><h3>Calendar</h3><p>See your upcoming deadlines and plan your schedule with ease.</p></div></div>
+    <div class="feature"><span class="f-icon"><svg class="icon"><use href="#i-bell"/></svg></span><div><h3>Reminders</h3><p>Get notified about important tasks so you never miss a deadline.</p></div></div>
+  </div>
+</section>
+
+<section class="split">
+  <div>
+    <h2 class="big">Everything you need<br>for school in one place.</h2>
+    <hr class="rule left">
+    <p>From upcoming assignments to important deadlines, Acadex gives you a simple overview of everything you need to accomplish. Stay organized and focus on what matters most.</p>
+  </div>
+  <img src="{% static 'core/img/laptop.png' %}" alt="Acadex on a laptop">
+</section>
+
+<section class="made">
+  <h2>Made for You.</h2>
+  <p class="made-q">What can Acadex do?</p>
+  <div class="cards4">
+    <div class="tile"><h3>Organize Academic Tasks</h3><p>Keep tasks and other schoolwork organized in one place.</p></div>
+    <div class="tile"><h3>Track Deadlines</h3><p>Help students monitor upcoming due dates so important tasks are less likely to be forgotten.</p></div>
+    <div class="tile"><h3>Prioritize Schoolwork</h3><p>Help students identify urgent and important tasks so they know what to work on first.</p></div>
+    <div class="tile"><h3>Monitor Academic Progress</h3><p>Let students track completed and pending tasks to see their progress and stay on top of their workload.</p></div>
+  </div>
+</section>
+
+<section class="cta">
+  <div class="cta-imgs">
+    <img src="{% static 'core/img/binder-blue1.png' %}" alt="">
+    <img src="{% static 'core/img/binder-red.png' %}" alt="">
+    <img src="{% static 'core/img/binder-blue2.png' %}" alt="">
+    <img class="pencil" src="{% static 'core/img/pencilcase.png' %}" alt="">
+  </div>
+  <div class="cta-text">
+    <h2>Ready to take control<br>of your schoolwork?</h2>
+    <p>Start organizing your academic life with Acadex today.</p>
+    <a href="{% url 'signup' %}" class="btn btn-primary btn-lg">Create Your Account</a>
+  </div>
+</section>
+{% endblock %}

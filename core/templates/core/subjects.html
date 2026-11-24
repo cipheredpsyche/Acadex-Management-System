@@ -1,0 +1,17 @@
+{% extends 'core/base_app.html' %}
+{% block title %}Subjects{% endblock %}
+{% block page_head %}<section class="page-head"><h1>Subjects</h1></section>{% endblock %}
+{% block content %}
+<div class="subject-grid">
+{% for c in cards %}
+  <div class="subject-card">
+    <h3>{{ c.name }}</h3>
+    <p>{{ c.total }} Task{{ c.total|pluralize }} &middot; {{ c.done }} completed</p>
+    <div class="bar"><span style="width: {{ c.pct }}%"></span></div>
+  </div>
+{% empty %}
+  <div class="empty wide">No subjects yet. Subjects appear here when you add a task.</div>
+{% endfor %}
+</div>
+<div class="bottom-bar right"><a href="{% url 'trash' %}" class="trash-link" title="Trash bin"><svg class="icon xl"><use href="#i-trash"/></svg></a></div>
+{% endblock %}

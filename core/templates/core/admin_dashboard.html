@@ -1,0 +1,38 @@
+{% extends 'core/base_app.html' %}
+{% block title %}Dashboard{% endblock %}
+{% block page_head %}
+<section class="hero-banner">
+  <p class="hello">Welcome back,</p>
+  <h1>{{ user.full_name }}</h1>
+  <p class="role">Administrator</p>
+  <p class="quote">&ldquo;Stay Focused, Stay Organized&rdquo;</p>
+</section>
+{% endblock %}
+{% block content %}
+<div class="stats stats-4">
+  <a class="stat" href="{% url 'admin_students' %}"><strong>{{ students }}</strong><span>Students</span></a>
+  <a class="stat" href="{% url 'admin_tasks' %}"><strong>{{ active }}</strong><span>Active Tasks</span></a>
+  <a class="stat" href="{% url 'admin_tasks' %}"><strong>{{ completed }}</strong><span>Completed</span></a>
+  <a class="stat" href="{% url 'admin_tasks' %}"><strong>{{ pending }}</strong><span>Pending</span></a>
+</div>
+
+<div class="activity-head"><h2 class="section-title">Recent Activities</h2><a href="{% url 'admin_tasks' %}" class="view-all">View all</a></div>
+<div class="activity-grid">
+  <div class="stack">
+    <section class="panel">
+      <h3 class="panel-title">New Student Added</h3>
+      <ol>{% for s in new_students %}<li>{{ s.full_name }}</li>{% empty %}<li class="muted">No students yet</li>{% endfor %}</ol>
+    </section>
+    <section class="panel">
+      <h3 class="panel-title">Deactivated Accounts</h3>
+      <ol>{% for s in deactivated %}<li>{{ s.full_name }}</li>{% empty %}<li class="muted">None</li>{% endfor %}</ol>
+    </section>
+  </div>
+  <section class="panel">
+    <h3 class="panel-title">Upcoming Deadlines</h3>
+    {% for t in deadlines %}
+      <div class="dl-row"><b>{{ t.due_date|date:"F j" }}</b><span>{{ t.title }}</span></div>
+    {% empty %}<p class="muted">No upcoming deadlines.</p>{% endfor %}
+  </section>
+</div>
+{% endblock %}

@@ -1,0 +1,29 @@
+{% extends 'core/base_app.html' %}
+{% block title %}Dashboard{% endblock %}
+{% block page_head %}
+<section class="hero-banner">
+  <p class="hello">Hello,</p>
+  <h1>{{ user.full_name }}</h1>
+  <p class="role">Student</p>
+  <p class="quote">&ldquo;Stay Focused, Stay Organized&rdquo;</p>
+</section>
+{% endblock %}
+{% block content %}
+<div class="stats stats-3">
+  <a class="stat" href="{% url 'tasks' %}"><strong>{{ total }}</strong><span>Tasks</span></a>
+  <a class="stat" href="{% url 'tasks' %}"><strong>{{ due_soon }}</strong><span>Due Soon</span></a>
+  <a class="stat" href="{% url 'tasks' %}"><strong>{{ complete }}</strong><span>Complete</span></a>
+</div>
+
+<h2 class="section-title">Upcoming Tasks</h2>
+{% for t in upcoming %}
+  <div class="row upcoming">
+    <span class="r-title">{{ t.title }}</span>
+    <span class="r-sub upper">{{ t.subject.name }}</span>
+    <span class="r-date">due {{ t.due_date|date:"F j, Y" }}{% if t.is_overdue %} <em class="late">overdue</em>{% endif %}</span>
+    <span class="pill pill-{{ t.status_class }}">{{ t.status }}</span>
+  </div>
+{% empty %}
+  <div class="empty">You have no upcoming tasks. Add one in <a href="{% url 'tasks' %}">My Tasks</a>.</div>
+{% endfor %}
+{% endblock %}

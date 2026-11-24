@@ -1,0 +1,63 @@
+{% load static %}<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% block title %}Acadex{% endblock %} | Acadex</title>
+<link rel="stylesheet" href="{% static 'core/css/style.css' %}">
+</head>
+<body class="app-body">
+{% include 'core/partials/icons.html' %}
+{% with n=request.resolver_match.url_name %}
+<div class="app">
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">Acadex <svg class="icon cap"><use href="#i-cap"/></svg></div>
+    <nav>
+      {% if user.is_admin_role %}
+        <a href="{% url 'dashboard' %}" class="{% if n == 'dashboard' %}active{% endif %}"><svg class="icon"><use href="#i-dashboard"/></svg>Dashboard</a>
+        <a href="{% url 'admin_tasks' %}" class="{% if n == 'admin_tasks' %}active{% endif %}"><svg class="icon"><use href="#i-manage"/></svg>Manage Tasks</a>
+        <a href="{% url 'admin_students' %}" class="{% if n == 'admin_students' or n == 'student_add' or n == 'student_edit' %}active{% endif %}"><svg class="icon"><use href="#i-students"/></svg>Students</a>
+        <a href="{% url 'admin_settings' %}" class="{% if n == 'admin_settings' or n == 'categories' or n == 'trash' %}active{% endif %}"><svg class="icon"><use href="#i-settings"/></svg>Settings</a>
+        <a href="{% url 'profile' %}" class="{% if n == 'profile' %}active{% endif %}"><svg class="icon"><use href="#i-profile"/></svg>Profile</a>
+      {% else %}
+        <a href="{% url 'dashboard' %}" class="{% if n == 'dashboard' %}active{% endif %}"><svg class="icon"><use href="#i-dashboard"/></svg>Dashboard</a>
+        <a href="{% url 'tasks' %}" class="{% if n == 'tasks' or n == 'trash' %}active{% endif %}"><svg class="icon"><use href="#i-tasks"/></svg>My Tasks</a>
+        <a href="{% url 'subjects' %}" class="{% if n == 'subjects' %}active{% endif %}"><svg class="icon"><use href="#i-subjects"/></svg>Subjects</a>
+        <a href="{% url 'progress' %}" class="{% if n == 'progress' %}active{% endif %}"><svg class="icon"><use href="#i-progress"/></svg>Progress</a>
+        <a href="{% url 'profile' %}" class="{% if n == 'profile' %}active{% endif %}"><svg class="icon"><use href="#i-profile"/></svg>Profile</a>
+      {% endif %}
+    </nav>
+    <form method="post" action="{% url 'logout' %}" class="logout-form">
+      {% csrf_token %}
+      <button type="submit"><svg class="icon"><use href="#i-logout"/></svg>Log Out</button>
+    </form>
+  </aside>
+
+  <main class="main">
+    <button class="menu-btn" id="menuBtn" type="button" aria-label="Open menu">&#9776;</button>
+    {% block page_head %}{% endblock %}
+    <div class="content">
+      {% for m in messages %}<div class="alert alert-{{ m.tags }}" data-flash>{{ m }}</div>{% endfor %}
+      {% block content %}{% endblock %}
+    </div>
+  </main>
+</div>
+{% endwith %}
+
+<!-- one shared "Are you sure?" popup used by every delete / deactivate / restore button -->
+<dialog id="confirmDialog" class="modal confirm-modal">
+  <form method="post" id="confirmForm" class="modal-form center">
+    {% csrf_token %}
+    <svg class="icon xl warn"><use href="#i-warn"/></svg>
+    <h2 id="confirmTitle">Are you sure?</h2>
+    <p id="confirmText"></p>
+    <div class="modal-actions">
+      <button type="button" class="btn btn-cream" data-close>Cancel</button>
+      <button type="submit" class="btn btn-maroon" id="confirmYes">Yes</button>
+    </div>
+  </form>
+</dialog>
+{% block modals %}{% endblock %}
+<script src="{% static 'core/js/app.js' %}"></script>
+</body>
+</html>

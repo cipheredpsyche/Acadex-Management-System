@@ -1,0 +1,65 @@
+{% extends 'core/base_app.html' %}
+{% block title %}My Tasks{% endblock %}
+{% block page_head %}
+<section class="page-head"><h1>My Tasks</h1>
+  <div class="table-head"><span>Task Title</span><span>Subject</span><span>Due Date</span><span>Status</span><span></span></div>
+</section>
+{% endblock %}
+{% block content %}
+<div class="task-list">
+{% for t in tasks %}
+  <div class="trow">
+    <button type="button" class="linklike bold" data-edit-task
+            data-action="{% url 'task_edit' t.pk %}" data-subject="{{ t.subject.name }}"
+            data-title="{{ t.title }}" data-due="{{ t.due_date|date:'Y-m-d' }}" data-status="{{ t.status }}"
+            title="Click to edit">{{ t.title }}</button>
+    <span class="c">{{ t.subject.name }}</span>
+    <span class="c{% if t.is_overdue %} late{% endif %}">{{ t.due_date|date:"F j, Y" }}</span>
+    <form method="post" action="{% url 'task_status' t.pk %}" class="status-form">
+      {% csrf_token %}
+      <select name="status" class="pill pill-{{ t.status_class }}" onchange="this.form.submit()" aria-label="Status">
+        {% for value, label in status_choices %}<option value="{{ value }}" {% if value == t.status %}selected{% endif %}>{{ label }}</option>{% endfor %}
+      </select>
+    </form>
+    <button type="button" class="icon-btn danger" title="Delete"
+            data-confirm data-confirm-title="Delete this task?"
+            data-confirm-text="“{{ t.title }}” will be moved to the trash bin. You can restore it later."
+            data-confirm-action="{% url 'task_delete' t.pk %}" data-confirm-yes="Delete">
+      <svg class="icon"><use href="#i-trash"/></svg></button>
+  </div>
+{% empty %}
+  <div class="empty">No tasks yet. Click “Add Task” to create your first one.</div>
+{% endfor %}
+</div>
+
+<div class="bottom-bar">
+  <button type="button" class="btn btn-maroon" data-add-task data-action="{% url 'task_add' %}" data-default-status="{{ default_status }}">
+    <svg class="icon sm"><use href="#i-plus"/></svg> Add Task</button>
+  <a href="{% url 'trash' %}" class="trash-link" title="Trash bin ({{ trash_count }})"><svg class="icon xl"><use href="#i-trash"/></svg></a>
+</div>
+{% endblock %}
+
+{% block modals %}
+<!-- Add / Edit Task popup (design: "Add task" picture) -->
+<dialog id="taskDialog" class="modal task-modal">
+  <form method="post" id="taskForm" action="{% url 'task_add' %}" class="modal-form">
+    {% csrf_token %}
+    <h2 class="modal-title" id="taskModalTitle">Add Task</h2>
+    <div class="field"><label for="t-subject">Subject</label>
+      <input type="text" id="t-subject" name="subject" class="input" placeholder="Enter Subject" list="subjectList" maxlength="100" required autocomplete="off"></div>
+    <datalist id="subjectList">{% for n in subject_names %}<option value="{{ n }}">{% endfor %}</datalist>
+    <div class="field"><label for="t-title">Task Title</label>
+      <input type="text" id="t-title" name="title" class="input" placeholder="Enter task title" maxlength="150" required></div>
+    <div class="field"><label for="t-due">Due Date</label>
+      <input type="date" id="t-due" name="due_date" class="input" required></div>
+    <div class="field"><label for="t-status">Status</label>
+      <select id="t-status" name="status" class="input">
+        {% for value, label in status_choices %}<option value="{{ value }}">{{ label }}</option>{% endfor %}
+      </select></div>
+    <div class="modal-actions">
+      <button type="button" class="btn btn-cream" data-close>Cancel</button>
+      <button type="submit" class="btn btn-maroon" id="taskSubmit">Add Task</button>
+    </div>
+  </form>
+</dialog>
+{% endblock %}

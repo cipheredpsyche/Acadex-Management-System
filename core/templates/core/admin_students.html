@@ -1,0 +1,121 @@
+{% extends 'core/base_app.html' %}
+{% block title %}Students{% endblock %}
+{% block page_head %}
+<section class="page-head tall"><h1>Students</h1>
+  <button type="button" class="btn btn-white add-student" data-add-student data-action="{% url 'student_add' %}">
+    <svg class="icon sm"><use href="#i-plus"/></svg> Add Student</button>
+  <form method="get" class="filter-bar">
+    <label class="searchbox"><svg class="icon"><use href="#i-search"/></svg>
+      <input type="search" name="q" value="{{ q }}" placeholder="Search student"></label>
+    <select name="section" class="section-select" onchange="this.form.submit()">
+      <option value="">All Sections</option>
+      {% for value, label in sections %}<option value="{{ value }}" {% if value == section %}selected{% endif %}>Section {{ label }}</option>{% endfor %}
+    </select>
+  </form>
+</section>
+{% endblock %}
+{% block content %}
+<div class="stats stats-3 pad-top">
+  <div class="stat icon-stat"><span class="dot blue"><svg class="icon"><use href="#i-profile"/></svg></span><div><strong>{{ total_students }}</strong><span>Total students</span></div></div>
+  <div class="stat icon-stat"><span class="dot green"><svg class="icon"><use href="#i-tasks"/></svg></span><div><strong>{{ active_students }}</strong><span>Active students</span></div></div>
+  <div class="stat icon-stat"><span class="dot yellow"><svg class="icon"><use href="#i-profile"/></svg></span><div><strong>{{ inactive_students }}</strong><span>Inactive students</span></div></div>
+</div>
+
+<div class="student-grid">
+{% for c in cards %}
+  {% with u=c.u %}
+  <article class="scard {% if not u.is_active %}inactive{% endif %}">
+    {% if u.photo %}<img class="s-photo" src="{{ u.photo.url }}" alt="">{% else %}<div class="s-photo avatar">{{ u.initials }}</div>{% endif %}
+    <div class="s-body">
+      <div class="s-top"><strong>{{ u.full_name }}</strong>
+        <span class="status-pill {% if u.is_active %}on{% else %}off{% endif %}">{% if u.is_active %}Active{% else %}Inactive{% endif %}</span>
+        <details class="kebab">
+          <summary aria-label="Options"><svg class="icon"><use href="#i-dots"/></svg></summary>
+          <div class="menu">
+            <button type="button" data-edit-student data-action="{% url 'student_edit' u.pk %}" data-student="{{ u.edit_json }}">Edit profile</button>
+            <button type="button" data-confirm data-confirm-title="Reset Password?"
+                    data-confirm-text="Create a new temporary password for {{ u.full_name }}?"
+                    data-confirm-action="{% url 'student_reset' u.pk %}" data-confirm-yes="Reset">Reset password</button>
+            <button type="button" data-confirm
+                    data-confirm-title="{% if u.is_active %}Deactivate Student?{% else %}Activate Student?{% endif %}"
+                    data-confirm-text="Are you sure you want to {% if u.is_active %}deactivate{% else %}activate{% endif %} {{ u.full_name }}?"
+                    data-confirm-action="{% url 'student_toggle' u.pk %}" data-confirm-yes="Yes">{% if u.is_active %}Deactivate{% else %}Activate{% endif %}</button>
+            <button type="button" class="danger" data-confirm data-confirm-title="Delete Student?"
+                    data-confirm-text="Delete {{ u.full_name }} and all of their tasks? This cannot be undone."
+                    data-confirm-action="{% url 'student_delete' u.pk %}" data-confirm-yes="Delete">Delete</button>
+          </div>
+        </details>
+      </div>
+      <p class="s-id"><svg class="icon maroon sm"><use href="#i-id"/></svg> ID: {{ u.school_id|default:"—" }}</p>
+      <p class="s-class">{{ u.class_label }}</p>
+      <p class="s-count">{{ u.done }}/{{ u.total }} Tasks Completed</p>
+      <div class="bar"><span style="width: {{ c.pct }}%"></span></div>
+    </div>
+  </article>
+  {% endwith %}
+{% empty %}
+  <div class="empty wide">No students found.</div>
+{% endfor %}
+</div>
+{% endblock %}
+
+{% block modals %}
+<!-- Add New Student / Edit Student popup -->
+<dialog id="studentDialog" class="modal student-modal" {% if open_form %}data-autoopen{% endif %}>
+  <form method="post" id="studentForm" action="{{ form_action|default:'' }}" class="modal-form">
+    {% csrf_token %}
+    <h2 class="modal-title plain" id="studentModalTitle">{{ edit_title|default:"Add New Student" }}</h2>
+    {% if form.errors %}
+      <div class="alert alert-error">
+        {% for e in form.non_field_errors %}{{ e }} {% endfor %}
+        {% for f in form %}{% for e in f.errors %}{{ f.label }}: {{ e }} {% endfor %}{% endfor %}
+      </div>
+    {% endif %}
+    <div class="form-grid two-cols">
+      <div>
+        <div class="field"><label for="{{ form.full_name.id_for_label }}">Full name</label>{{ form.full_name }}</div>
+        <div class="field"><label for="ageField">Age <small>(calculated from date of birth)</small></label>
+          <input type="text" id="ageField" class="input" value="" readonly tabindex="-1" placeholder="—"></div>
+        <div class="field"><label for="{{ form.gender.id_for_label }}">Gender</label>{{ form.gender }}</div>
+        <div class="field"><label for="{{ form.birthdate.id_for_label }}">Date of Birth</label>
+          <div class="date-wrap">{{ form.birthdate }}
+            <button type="button" class="date-btn" data-open-date aria-label="Open calendar"><svg class="icon"><use href="#i-calendar"/></svg></button></div>
+          <div class="quickpick" id="dobQuick" aria-label="Quick date of birth picker">
+            <span>Quick pick:</span>
+            <select id="qpMonth" aria-label="Month"></select>
+            <select id="qpDay" aria-label="Day"></select>
+            <select id="qpYear" aria-label="Year"></select>
+          </div></div>
+        <div class="field"><label for="{{ form.address.id_for_label }}">Address</label>{{ form.address }}</div>
+        <div class="field"><label for="{{ form.email.id_for_label }}">Email Address</label>{{ form.email }}</div>
+        <div class="field"><label for="{{ form.contact_number.id_for_label }}">Contact Number</label>{{ form.contact_number }}</div>
+      </div>
+      <div>
+        <div class="field"><label for="{{ form.course.id_for_label }}">Course / Program</label>{{ form.course }}</div>
+        <div class="field"><label for="{{ form.academic_year.id_for_label }}">Academic Year</label>{{ form.academic_year }}</div>
+        <div class="field"><label for="{{ form.year_level.id_for_label }}">Year Level</label>{{ form.year_level }}</div>
+        <div class="field"><label for="{{ form.section.id_for_label }}">Section</label>{{ form.section }}</div>
+        <div class="field"><label for="{{ form.school_id.id_for_label }}">Student ID</label>{{ form.school_id }}</div>
+        <div class="field"><label for="{{ form.password.id_for_label }}" id="pwLabel">Password</label>{{ form.password }}</div>
+        <div class="modal-actions end">
+          <button type="button" class="btn btn-cream" data-close>Cancel</button>
+          <button type="submit" class="btn btn-maroon">Save Changes</button>
+        </div>
+      </div>
+    </div>
+  </form>
+</dialog>
+
+{% if reset_info %}
+<dialog id="resetDialog" class="modal confirm-modal" data-autoopen>
+  <div class="modal-form center">
+    <svg class="icon xl ok"><use href="#i-tasks"/></svg>
+    <h2>Reset Password Sent</h2>
+    <p>A new temporary password was created for <strong>{{ reset_info.name }}</strong>
+       and emailed to {{ reset_info.email }} (if email sending is set up).</p>
+    <p>Temporary password: <code class="temp-pw">{{ reset_info.password }}</code></p>
+    <div class="modal-actions"><button type="button" class="btn btn-maroon" data-close>Done</button></div>
+  </div>
+</dialog>
+{% endif %}
+{% endblock %}
